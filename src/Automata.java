@@ -1,38 +1,60 @@
+import java.util.HashMap;
+import java.util.Map;
+
 public class Automata {
     private char[] alfabeto;
-    private Nodo nodoInicial;
-    private Nodo[] nodosAceptacion;
+    private Nodo[] estados;
+    private Nodo estadoInicial;
+    private Nodo[] estadosFinales;
+    private Map<Nodo, Map<Character, Nodo>> transiciones;
 
-    public Automata(char[] alfabeto, Nodo nodoInicial, Nodo[] nodosAceptacion) {
+    public Automata(char[] alfabeto, Nodo[] estados, Nodo estadoInicial, Nodo[] estadosFinales) {
         this.alfabeto = alfabeto;
-        this.nodoInicial = nodoInicial;
-        this.nodosAceptacion = nodosAceptacion;
+        this.estados = estados;
+        this.estadoInicial = estadoInicial;
+        this.estadosFinales = estadosFinales;
+        this.transiciones = new HashMap<>();
+        inicializarTransiciones();
+    }
+
+    private void inicializarTransiciones() {
+        for (Nodo estado : estados) {
+            transiciones.put(estado, new HashMap<>());
+        }
+    }
+
+    public void agregarTransicion(Nodo origen, char simbolo, Nodo destino) {
+        if (transiciones.containsKey(origen)) {
+            transiciones.get(origen).put(simbolo, destino);
+        }
+    }
+
+    public Nodo transicion(Nodo estadoActual, char simbolo) {
+        if (transiciones.containsKey(estadoActual)) {
+            return transiciones.get(estadoActual).get(simbolo);
+        }
+        return null;
     }
 
     public boolean verificarCadena(String cadena) {
-        Nodo estadoActual = nodoInicial;
+        Nodo estadoActual = estadoInicial;
 
         for (char simbolo : cadena.toCharArray()) {
-            if (!estaEnAlfabeto(simbolo)) {
-                return false;  // El símbolo no está en el alfabeto, cadena no válida
+            if (!esSimboloValido(simbolo)) {
+                return false; // El símbolo no está en el alfabeto
             }
 
-            estadoActual = estadoActual.transicion(simbolo);
+            estadoActual = transicion(estadoActual, simbolo);
+
             if (estadoActual == null) {
-                return false;  // No hay transición para el símbolo en el estado actual
+                return false; // No hay transición para el símbolo en el estado actual
             }
         }
 
-        for (Nodo nodoAceptacion : nodosAceptacion) {
-            if (estadoActual == nodoAceptacion) {
-                return true;  // La cadena es aceptada
-            }
-        }
-
-        return false;  // La cadena no es aceptada
+        return esEstadoAceptacion(estadoActual);
     }
 
-    private boolean estaEnAlfabeto(char simbolo) {
+    private boolean esSimboloValido(char simbolo) {
         for (char c : alfabeto) {
             if (c == simbolo) {
                 return true;
@@ -40,4 +62,60 @@ public class Automata {
         }
         return false;
     }
+
+    private boolean esEstadoAceptacion(Nodo estado) {
+        for (Nodo nodo : estadosFinales) {
+            if (nodo == estado) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*
+     * Getters y Setters
+     */
+
+    public char[] getAlfabeto() {
+        return alfabeto;
+    }
+
+    public void setAlfabeto(char[] alfabeto) {
+        this.alfabeto = alfabeto;
+    }
+
+    public Nodo[] getEstados() {
+        return estados;
+    }
+
+    public void setEstados(Nodo[] estados) {
+        this.estados = estados;
+    }
+
+    public Nodo getEstadoInicial() {
+        return estadoInicial;
+    }
+
+    public void setEstadoInicial(Nodo estadoInicial) {
+        this.estadoInicial = estadoInicial;
+    }
+
+    public Nodo[] getEstadosFinales() {
+        return estadosFinales;
+    }
+
+    public void setEstadosFinales(Nodo[] estadosFinales) {
+        this.estadosFinales = estadosFinales;
+    }
+
+    public Map<Nodo, Map<Character, Nodo>> getTransiciones() {
+        return transiciones;
+    }
+
+    public void setTransiciones(Map<Nodo, Map<Character, Nodo>> transiciones) {
+        this.transiciones = transiciones;
+    }
+    
+    
+    
 }

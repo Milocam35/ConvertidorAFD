@@ -1,18 +1,9 @@
-## Getting Started
+Automata Finito Determinista (AFD) en Java
+Este proyecto implementa un autómata finito determinista (AFD) en Java, permitiendo al usuario definir el alfabeto, los estados del autómata, el estado inicial, los estados finales y la tabla de transiciones. Luego, el programa puede verificar si una cadena dada es aceptada por el autómata.
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
-
-## Folder Structure
-
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+Funcionalidades
+Definir el alfabeto del autómata.
+Ingresar los estados del autómata.
+Establecer el estado inicial y los estados finales del autómata.
+Crear la tabla de transiciones del autómata.
+Verificar si una cadena dada es aceptada por el autómata.

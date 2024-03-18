@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
@@ -36,23 +38,56 @@ public class App {
     }
 
     public static void main(String[] args) {
-        // Crear nodos
-        Nodo q0 = new Nodo("q0");
-        Nodo q1 = new Nodo("q1");
-        Nodo[] estados = {q0, q1};
+        Scanner scanner = new Scanner(System.in);
 
-        // Definir alfabeto
-        char[] alfabeto = {'0', '1'};
+        // Ingresar número de estados
+        int nEstados;
+        do {
+            System.out.println("Ingrese el número de estados (debe ser mayor a 1): ");
+            nEstados = scanner.nextInt();
+        } while (nEstados <= 1);
+
+        // Crear nodos
+        Nodo[] estados = new Nodo[nEstados];
+        for (int i = 0; i < nEstados; i++) {
+            estados[i] = new Nodo("q" + i);
+            System.out.println("Estado q" + i + " creado");
+        }
+
+        // Ingresar alfabeto
+        System.out.println("Ingrese el alfabeto (ejemplo: 01)");
+        String alfabetoStr = scanner.next();
+        char[] alfabeto = alfabetoStr.replaceAll("\\s","").toCharArray();
 
         // Definir estados inicial y finales
-        Nodo estadoInicial = q0;
-        Nodo[] estadosFinales = {q1};
+        Nodo estadoInicial = estados[0];
+        List<Nodo> estadosFinales = new ArrayList<>();
+        do {
+            System.out.println("Ingrese los estados de aceptacion separados por coma (ejemplo: q1,q2):");
+            String inputFinales = scanner.next();
+            String[] finalesArray = inputFinales.split(",");
+
+            for (String nombreFinal : finalesArray) {
+                for (Nodo estado : estados) {
+                    if (estado.getNombre().equals(nombreFinal)) {
+                        estadosFinales.add(estado);
+                        break;
+                    }
+                }
+            }
+
+            // Verificar si se encontraron estados finales
+            if (estadosFinales.isEmpty()) {
+                System.out.println("No se encontraron estados finales válidos.");
+            } else {
+                System.out.println("Estados finales definidos correctamente.");
+                
+            }
+        } while (estadosFinales.isEmpty());
+
 
         // Crear autómata
         Automata automata = new Automata(alfabeto, estados, estadoInicial, estadosFinales);
-
-        // Crear un Scanner para leer la entrada del usuario
-        Scanner scanner = new Scanner(System.in);
 
         // Definir la tabla de transiciones
         definirTablaTransiciones(automata, scanner);
@@ -65,5 +100,4 @@ public class App {
         // Cerrar el Scanner
         scanner.close();
     }
-
 }

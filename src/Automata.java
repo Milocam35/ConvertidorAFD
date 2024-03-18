@@ -1,14 +1,15 @@
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Automata {
     private char[] alfabeto;
     private Nodo[] estados;
     private Nodo estadoInicial;
-    private Nodo[] estadosFinales;
+    private List<Nodo> estadosFinales;
     private Map<Nodo, Map<Character, Nodo>> transiciones;
 
-    public Automata(char[] alfabeto, Nodo[] estados, Nodo estadoInicial, Nodo[] estadosFinales) {
+    public Automata(char[] alfabeto, Nodo[] estados, Nodo estadoInicial, List<Nodo> estadosFinales) {
         this.alfabeto = alfabeto;
         this.estados = estados;
         this.estadoInicial = estadoInicial;
@@ -100,11 +101,11 @@ public class Automata {
         this.estadoInicial = estadoInicial;
     }
 
-    public Nodo[] getEstadosFinales() {
+    public List<Nodo> getEstadosFinales() {
         return estadosFinales;
     }
 
-    public void setEstadosFinales(Nodo[] estadosFinales) {
+    public void setEstadosFinales(List<Nodo> estadosFinales) {
         this.estadosFinales = estadosFinales;
     }
 

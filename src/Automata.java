@@ -32,23 +32,28 @@ public class Automata {
 
     public Nodo transicion(Nodo estadoActual, char simbolo) {
         if (transiciones.containsKey(estadoActual)) {
-            return transiciones.get(estadoActual).get(simbolo);
+            Map<Character, Nodo> transicionesDesdeEstado = transiciones.get(estadoActual);
+            if (transicionesDesdeEstado.containsKey(simbolo)) {
+                return transicionesDesdeEstado.get(simbolo);
+            }
         }
-        return null;
+        // Si no hay una transición definida para el símbolo, devolver el mismo estado actual
+        return estadoActual;
     }
+    
 
     public boolean verificarCadena(String cadena) {
         Nodo estadoActual = estadoInicial;
 
         for (char simbolo : cadena.toCharArray()) {
             if (!esSimboloValido(simbolo)) {
-                return false; // El símbolo no está en el alfabeto
+                return false;
             }
 
             estadoActual = transicion(estadoActual, simbolo);
 
             if (estadoActual == null) {
-                return false; // No hay transición para el símbolo en el estado actual
+                return false;
             }
         }
 

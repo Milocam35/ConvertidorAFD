@@ -10,5 +10,6 @@ Este proyecto implementa un autómata finito determinista (AFD) en Java, permiti
 
 ## Avances
 - Definicion de transiciones nulas entre estados
-- Realizacion de un automata finito no determinista (En progreso)
+- Realizacion de un automata finito no determinista
+- Realizacion de automata finito no determinista (lambda) En progreso
 

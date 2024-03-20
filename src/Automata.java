@@ -1,44 +1,68 @@
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Automata {
     private char[] alfabeto;
     private Nodo[] estados;
     private Nodo estadoInicial;
     private List<Nodo> estadosFinales;
-    private Map<Nodo, Map<Character, Nodo>> transiciones;
+    private Map<Nodo, Map<Character, Nodo>> transicionesAFD;
+    private Map<Nodo, Map<Character, Set<Nodo>>> transicionesAFND;
 
     public Automata(char[] alfabeto, Nodo[] estados, Nodo estadoInicial, List<Nodo> estadosFinales) {
         this.alfabeto = alfabeto;
         this.estados = estados;
         this.estadoInicial = estadoInicial;
         this.estadosFinales = estadosFinales;
-        this.transiciones = new HashMap<>();
+        this.transicionesAFD = new HashMap<>();
+        this.transicionesAFND = new HashMap<>();
         inicializarTransiciones();
     }
 
     private void inicializarTransiciones() {
         for (Nodo estado : estados) {
-            transiciones.put(estado, new HashMap<>());
+            transicionesAFD.put(estado, new HashMap<>());
+            transicionesAFND.put(estado, new HashMap<>());
         }
     }
 
-    public void agregarTransicion(Nodo origen, char simbolo, Nodo destino) {
-        if (transiciones.containsKey(origen)) {
-            transiciones.get(origen).put(simbolo, destino);
+    public void agregarTransicionAFD(Nodo origen, char simbolo, Nodo destino) {
+        if (transicionesAFD.containsKey(origen)) {
+            transicionesAFD.get(origen).put(simbolo, destino);
         }
     }
 
-    public Nodo transicion(Nodo estadoActual, char simbolo) {
-        if (transiciones.containsKey(estadoActual)) {
-            Map<Character, Nodo> transicionesDesdeEstado = transiciones.get(estadoActual);
+    public void agregarTransicionAFND(Nodo origen, char simbolo, Set<Nodo> destinos) {
+        if (transicionesAFND.containsKey(origen)) {
+            transicionesAFND.get(origen).put(simbolo, destinos);
+        } else {
+            Map<Character, Set<Nodo>> transiciones = new HashMap<>();
+            transiciones.put(simbolo, destinos);
+            transicionesAFND.put(origen, transiciones);
+        }
+    }
+    
+
+
+    public Nodo transicionAFD(Nodo estadoActual, char simbolo) {
+        if (transicionesAFD.containsKey(estadoActual)) {
+            Map<Character, Nodo> transicionesDesdeEstado = transicionesAFD.get(estadoActual);
             if (transicionesDesdeEstado.containsKey(simbolo)) {
                 return transicionesDesdeEstado.get(simbolo);
             }
         }
         // Si no hay una transición definida para el símbolo, devolver el mismo estado actual
         return estadoActual;
+    }
+
+    public Set<Nodo> transicionAFND(Nodo estadoActual, char simbolo) {
+        Set<Nodo> destinos = new HashSet<>();
+        if (transicionesAFND.containsKey(estadoActual)) {
+            Map<Character, Set<Nodo>> transicionesDesdeEstado = transicionesAFND.get(estadoActual);
+            if (transicionesDesdeEstado.containsKey(simbolo)) {
+                destinos.addAll(transicionesDesdeEstado.get(simbolo));
+            }
+        }
+        return destinos;
     }
     
 
@@ -50,15 +74,46 @@ public class Automata {
                 return false;
             }
 
-            estadoActual = transicion(estadoActual, simbolo);
+            estadoActual = transicionAFD(estadoActual, simbolo);
 
             if (estadoActual == null) {
                 return false;
             }
         }
-
         return esEstadoAceptacion(estadoActual);
     }
+
+    public boolean verificarCadenaAFND(String cadena) {
+        Set<Nodo> estadosActuales = new HashSet<>();
+        estadosActuales.add(estadoInicial);
+    
+        for (char simbolo : cadena.toCharArray()) {
+            if (!esSimboloValido(simbolo)) {
+                return false;
+            }
+    
+            Set<Nodo> nuevosEstados = new HashSet<>();
+            for (Nodo estadoActual : estadosActuales) {
+                Set<Nodo> destinos = transicionAFND(estadoActual, simbolo);
+                nuevosEstados.addAll(destinos);
+            }
+            estadosActuales = nuevosEstados;
+    
+            if (estadosActuales.isEmpty()) {
+                return false;
+            }
+        }
+    
+        // Verificar si al menos uno de los estados finales es alcanzable
+        for (Nodo estado : estadosActuales) {
+            if (esEstadoAceptacion(estado)) {
+                return true;
+            }
+        }
+    
+        return false;
+    }
+    
 
     private boolean esSimboloValido(char simbolo) {
         for (char c : alfabeto) {
@@ -114,12 +169,12 @@ public class Automata {
         this.estadosFinales = estadosFinales;
     }
 
-    public Map<Nodo, Map<Character, Nodo>> getTransiciones() {
-        return transiciones;
+    public Map<Nodo, Map<Character, Nodo>> getTransicionesAFD() {
+        return transicionesAFD;
     }
 
     public void setTransiciones(Map<Nodo, Map<Character, Nodo>> transiciones) {
-        this.transiciones = transiciones;
+        this.transicionesAFD = transiciones;
     }
     
     

@@ -214,6 +214,4 @@ public class App {
         } while (estadosFinales.isEmpty());
         return estadosFinales;
     }
-    
-    
 }

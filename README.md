@@ -7,9 +7,11 @@ Este proyecto implementa un autómata finito determinista (AFD) en Java, permiti
 - Establecer el estado inicial y los estados finales del autómata.
 - Crear la tabla de transiciones del autómata.
 - Verificar si una cadena dada es aceptada por el autómata.
+- Si el automata es no determinista, lo transforma a determinista e imprime su tabla de transiciones
 
 ## Avances
 - Definicion de transiciones nulas entre estados
 - Realizacion de un automata finito no determinista
 - Realizacion de automata finito no determinista (lambda) En progreso
+- Conversion de AFD a AFND
 

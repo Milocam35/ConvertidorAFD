@@ -40,8 +40,6 @@ public class Automata {
             transicionesAFND.put(origen, transiciones);
         }
     }
-    
-
 
     public Nodo transicionAFD(Nodo estadoActual, char simbolo) {
         if (transicionesAFD.containsKey(estadoActual)) {
@@ -66,7 +64,7 @@ public class Automata {
     }
     
 
-    public boolean verificarCadena(String cadena) {
+    public boolean verificarCadenaAFD(String cadena) {
         Nodo estadoActual = estadoInicial;
 
         for (char simbolo : cadena.toCharArray()) {
@@ -113,8 +111,6 @@ public class Automata {
     
         return false;
     }
-    
-
     private boolean esSimboloValido(char simbolo) {
         for (char c : alfabeto) {
             if (c == simbolo) {
@@ -132,6 +128,66 @@ public class Automata {
         }
         return false;
     }
+
+    public void mostrarTablaTransicionesAFD() {
+        System.out.println("Tabla de Transiciones del AFD:");
+    
+        // Imprimir encabezados de columna
+        System.out.print("Estado\t|");
+        for (char simbolo : alfabeto) {
+            System.out.print("\t" + simbolo + "\t|");
+        }
+        System.out.println();
+    
+        // Imprimir separador
+        int separadorLength = 8 + (alfabeto.length * 6); // Longitud de separador = longitud del estado + longitud de cada símbolo de alfabeto + separadores
+        for (int i = 0; i < separadorLength; i++) {
+            System.out.print("-");
+        }
+        System.out.println();
+    
+        // Imprimir filas de la tabla de transiciones
+        for (Nodo estado : estados) {
+            System.out.print(estado.getNombre() + "\t|");
+            Map<Character, Nodo> transicionesEstado = transicionesAFD.get(estado);
+            for (char simbolo : alfabeto) {
+                Nodo destino = transicionesEstado.get(simbolo);
+                System.out.print("\t" + (destino != null ? destino.getNombre() : "-") + "\t|");
+            }
+            System.out.println();
+        }
+    }
+
+    public void mostrarTablaTransicionesAFND() {
+        System.out.println("Tabla de Transiciones del AFND:");
+    
+        // Imprimir encabezados de columna
+        System.out.print("Estado\t|");
+        for (char simbolo : alfabeto) {
+            System.out.print("\t" + simbolo + "\t|");
+        }
+        System.out.println();
+    
+        // Imprimir separador
+        int separadorLength = 8 + (alfabeto.length * 6); // Longitud de separador = longitud del estado + longitud de cada símbolo de alfabeto + separadores
+        for (int i = 0; i < separadorLength; i++) {
+            System.out.print("-");
+        }
+        System.out.println();
+    
+        // Imprimir filas de la tabla de transiciones
+        for (Nodo estado : estados) {
+            System.out.print(estado.getNombre() + "\t|");
+            Map<Character, Set<Nodo>> transicionesEstado = transicionesAFND.get(estado);
+            for (char simbolo : alfabeto) {
+                Set<Nodo> destinos = transicionesEstado.get(simbolo);
+                System.out.print("\t" + (destinos != null ? destinos : "-") + "\t|");
+            }
+            System.out.println();
+        }
+    }
+    
+    
 
     /*
      * Getters y Setters
@@ -173,10 +229,18 @@ public class Automata {
         return transicionesAFD;
     }
 
-    public void setTransiciones(Map<Nodo, Map<Character, Nodo>> transiciones) {
+    public void setTransicionesAFND(Map<Nodo, Map<Character, Set<Nodo>>> transicionesAFND) {
+        this.transicionesAFND = transicionesAFND;
+    }
+
+    public void setTransicionesAFD(Map<Nodo, Map<Character, Nodo>> transiciones) {
         this.transicionesAFD = transiciones;
     }
-    
+
+    public Map<Nodo, Map<Character, Set<Nodo>>> getTransicionesAFND() {
+        return transicionesAFND;
+    }
+
     
     
 }

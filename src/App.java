@@ -5,7 +5,6 @@ public class App {
     public static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-
         // Ingresar número de estados
         int nEstados;
         do {
@@ -25,58 +24,62 @@ public class App {
 
         // Definir estados inicial y finales
         Nodo estadoInicial = estados[0];
-        
         List<Nodo> estadosFinales = ingEstadosFinales(estados);
 
         // Crear autómata
         Automata automata = new Automata(alfabeto, estados, estadoInicial, estadosFinales);
-        
 
         boolean repetirCadena = true;
-
-
-        
         boolean repetirEleccion = true;
+
         do {
             // Definir la tabla de transiciones
-            System.out.println("Que clase de automata desea crear? AFD, AFND o AFNDL?");
+            System.out.println("¿Qué clase de autómata desea crear? AFD, AFND o AFNDL?");
             String clasificacionAutomata = scanner.next();
-            if(clasificacionAutomata.equals("AFD")){
-                System.out.println("AUTOMATA FINITO DETERMINISTA:");
+            if (clasificacionAutomata.equals("AFD")) {
+                System.out.println("AUTÓMATA FINITO DETERMINISTA:");
                 definirTablaTransiciones(automata, scanner);
                 do {
                     // Verificar cadenas
                     System.out.println("Ingrese la cadena a verificar:");
                     String cadena = scanner.next();
-                    //System.out.println("La cadena es aceptada por el autómata: " + automata.verificarCadena(cadena));
-                    System.out.println("La cadena es aceptada por el AFD: " + automata.verificarCadenaAFD(cadena));
+                    boolean cadenaValida = automata.verificarCadenaAFD(cadena);
+                    System.out.println("La cadena es aceptada por el AFD: " + cadenaValida);
+                    if (!cadenaValida) {
+                        automata.setVida(false);
+                        System.out.println("El automata perdio su vida!!");
+                    }
                     System.out.println("Desea ingresar otra cadena? s/n");
                     String repetir = scanner.next();
-                    if(repetir.equals("s")){
-                    continue;
-                    }else if(repetir.equals("n")){
+                    if (repetir.equals("s")) {
+                        continue;
+                    } else if (repetir.equals("n")) {
                         repetirCadena = false;
-                    }else{
+                    } else {
                         repetirCadena = true;
                     }
                 } while (repetirCadena);
                 automata.mostrarTablaTransicionesAFD();
                 repetirEleccion = false;
-            }else if(clasificacionAutomata.equals("AFND")){
-                System.out.println("AUTOMATA FINITO NO DETERMINISTA:");
+            } else if (clasificacionAutomata.equals("AFND")) {
+                System.out.println("AUTÓMATA FINITO NO DETERMINISTA:");
                 definirTablaDeTrancisionesAFND(automata, scanner);
                 do {
                     // Verificar cadenas
                     System.out.println("Ingrese la cadena a verificar:");
                     String cadena = scanner.next();
-                    //System.out.println("La cadena es aceptada por el autómata: " + automata.verificarCadena(cadena));
-                    System.out.println("La cadena es aceptada por el AFND: " + automata.verificarCadenaAFND(cadena));
+                    boolean cadenaValida = automata.verificarCadenaAFND(cadena);
+                    System.out.println("La cadena es aceptada por el AFND: " + cadenaValida);
+                    if (!cadenaValida) {
+                        automata.setVida(false);
+                        System.out.println("El automata perdio su vida!!");
+                    }
                     System.out.println("Desea ingresar otra cadena? s/n");
                     String repetir = scanner.next();
-                    
-                    if(repetir.equals("s")){
-                    continue;
-                    }else{
+
+                    if (repetir.equals("s")) {
+                        continue;
+                    } else {
                         repetirCadena = false;
                     }
                 } while (repetirCadena);
@@ -84,35 +87,45 @@ public class App {
                 automata = convertirAFNDaAFD(automata);
                 automata.mostrarTablaTransicionesAFD();
                 repetirEleccion = false;
-            }else if(clasificacionAutomata.equals("AFNDL")){
-                System.out.println("AUTOMATA FINITO NO DETERMINISTA LAMBDA:");
+            } else if (clasificacionAutomata.equals("AFNDL")) {
+                System.out.println("AUTÓMATA FINITO NO DETERMINISTA LAMBDA:");
                 definirTablaDeTrancisionesLambda(automata, scanner);
                 do {
                     // Verificar cadenas
                     System.out.println("Ingrese la cadena a verificar:");
                     String cadena = scanner.next();
-                    //System.out.println("La cadena es aceptada por el autómata: " + automata.verificarCadena(cadena));
-                    System.out.println("La cadena es aceptada por el AFNDL: " + automata.verificarCadenaAFNDLambda(cadena));
+                    boolean cadenaValida = automata.verificarCadenaAFNDLambda(cadena);
+                    System.out.println("La cadena es aceptada por el AFNDL: " + cadenaValida);
+                    if (!cadenaValida) {
+                        automata.setVida(false);
+                        System.out.println("El automata perdio su vida!!");
+                    }
                     System.out.println("Desea ingresar otra cadena? s/n");
                     String repetir = scanner.next();
-                    
-                    if(repetir.equals("s")){
-                    continue;
-                    }else{
+
+                    if (repetir.equals("s")) {
+                        continue;
+                    } else {
                         repetirCadena = false;
                     }
                 } while (repetirCadena);
-            }
-            else{
-                System.out.println("Ingrese un automata valido");
+            } else {
+                System.out.println("Ingrese un autómata válido");
                 repetirEleccion = true;
             }
         } while (repetirEleccion);
-        
-        
+
+        // Mostrar el resultado al final del programa
+        if (automata.isVida()) {
+            System.out.println("¡Felicidades! Ha completado todas las cadenas correctamente. WIN!");
+        } else {
+            System.out.println("GAME OVER. Ha perdido una vida.");
+        }
+
         // Cerrar el Scanner
         scanner.close();
     }
+
 
 
     public static void definirTablaDeTrancisionesLambda(Automata automata, Scanner sc) {
@@ -549,17 +562,39 @@ public class App {
         for (int i = 0; i < estadosUtilizados.size(); i++) {
             String estado = estadosUtilizados.get(i);
             for (int j = 0; j < alfabeto.length; j++) {
+                StringBuilder transicionesConcatenadas = new StringBuilder();
                 for (int k = 0; k < nuevosEstadosAFD.size(); k++) {
                     if (nuevosEstadosAFD.get(k).getNombre().equals(estado)) {
-                        nuevaMatrizTransiciones[i][j] = matrizTransiciones[k][j];
+                        String[] transiciones = matrizTransiciones[k][j].split(",");
+                        for (String transicion : transiciones) {
+                            if (!transicion.equals("null")) {
+                                transicionesConcatenadas.append(transicion).append(",");
+                            }
+                        }
                         break;
                     }
                 }
+                // Eliminar la última coma si existe
+                if (transicionesConcatenadas.length() > 0) {
+                    transicionesConcatenadas.deleteCharAt(transicionesConcatenadas.length() - 1);
+                }
+                nuevaMatrizTransiciones[i][j] = transicionesConcatenadas.toString();
             }
+        }
+    
+        // Imprimir la nueva matriz de transiciones
+        System.out.println("Nueva Matriz de Transiciones:");
+        for (String[] fila : nuevaMatrizTransiciones) {
+            for (String transicion : fila) {
+                System.out.print(transicion + "\t");
+            }
+            System.out.println();
         }
     
         return nuevaMatrizTransiciones;
     }
+    
+    
     
 
     

@@ -7,16 +7,19 @@ public class Automata {
     private List<Nodo> estadosFinales;
     private Map<Nodo, Map<Character, Nodo>> transicionesAFD;
     private Map<Nodo, Map<Character, Set<Nodo>>> transicionesAFND;
+    private boolean vida;
 
     public Automata(char[] alfabeto, Nodo[] estados, Nodo estadoInicial, List<Nodo> estadosFinales) {
         this.alfabeto = alfabeto;
         this.estados = estados;
         this.estadoInicial = estadoInicial;
         this.estadosFinales = estadosFinales;
+        this.vida = true;
         this.transicionesAFD = new HashMap<>();
         this.transicionesAFND = new HashMap<>();
         inicializarTransiciones();
     }
+
 
     private void inicializarTransiciones() {
         for (Nodo estado : estados) {
@@ -222,15 +225,27 @@ public class Automata {
     
         // Imprimir filas de la tabla de transiciones
         for (Nodo estado : estados) {
-            System.out.print(estado.getNombre() + "\t|");
             Map<Character, Nodo> transicionesEstado = transicionesAFD.get(estado);
+            // Verificar si el estado tiene al menos una transición definida
+            boolean tieneTransiciones = false;
             for (char simbolo : alfabeto) {
-                Nodo destino = transicionesEstado.get(simbolo);
-                System.out.print("\t" + (destino != null ? destino.getNombre() : "-") + "\t|");
+                if (transicionesEstado.containsKey(simbolo)) {
+                    tieneTransiciones = true;
+                    break;
+                }
             }
-            System.out.println();
+            // Si el estado tiene transiciones definidas, imprimir la fila
+            if (tieneTransiciones) {
+                System.out.print(estado.getNombre() + "\t|");
+                for (char simbolo : alfabeto) {
+                    Nodo destino = transicionesEstado.get(simbolo);
+                    System.out.print("\t" + (destino != null ? destino.getNombre() : "-") + "\t|");
+                }
+                System.out.println();
+            }
         }
     }
+    
 
     public void mostrarTablaTransicionesAFND() {
         System.out.println("Tabla de Transiciones del AFND:");
@@ -315,6 +330,11 @@ public class Automata {
         return transicionesAFND;
     }
 
-    
-    
+    public boolean isVida() {
+        return vida;
+    }
+
+    public void setVida(boolean vida) {
+        this.vida = vida;
+    }
 }

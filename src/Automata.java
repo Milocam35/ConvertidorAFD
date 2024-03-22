@@ -41,6 +41,40 @@ public class Automata {
         }
     }
 
+    public void agregarTransicionEpsilon(Nodo origen, Nodo destino) {
+        if (transicionesAFND.containsKey(origen)) {
+            Map<Character, Set<Nodo>> transicionesDesdeEstado = transicionesAFND.get(origen);
+            // Las transiciones epsilon se representan con el caracter especial '\0'
+            transicionesDesdeEstado.computeIfAbsent('\0', k -> new HashSet<>()).add(destino);
+        } else {
+            Map<Character, Set<Nodo>> transiciones = new HashMap<>();
+            Set<Nodo> destinos = new HashSet<>();
+            destinos.add(destino);
+            transiciones.put('\0', destinos);
+            transicionesAFND.put(origen, transiciones);
+        }
+    }
+
+    private Set<Nodo> obtenerClausuraEpsilon(Nodo estado) {
+        Set<Nodo> clausuraEpsilon = new HashSet<>();
+        Queue<Nodo> cola = new LinkedList<>();
+        cola.add(estado);
+        clausuraEpsilon.add(estado);
+    
+        while (!cola.isEmpty()) {
+            Nodo actual = cola.poll();
+            // Obtener los destinos de las transiciones epsilon desde el estado actual
+            Set<Nodo> destinosEpsilon = transicionAFND(actual, '\0');
+            for (Nodo destino : destinosEpsilon) {
+                if (!clausuraEpsilon.contains(destino)) {
+                    clausuraEpsilon.add(destino);
+                    cola.add(destino);
+                }
+            }
+        }
+        return clausuraEpsilon;
+    }
+
     public Nodo transicionAFD(Nodo estadoActual, char simbolo) {
         if (transicionesAFD.containsKey(estadoActual)) {
             Map<Character, Nodo> transicionesDesdeEstado = transicionesAFD.get(estadoActual);
@@ -61,6 +95,44 @@ public class Automata {
             }
         }
         return destinos;
+    }
+
+    public boolean verificarCadenaAFNDLambda(String cadena) {
+        Set<Nodo> estadosActuales = new HashSet<>();
+        estadosActuales.add(estadoInicial);
+    
+        // Agregar todos los estados alcanzables mediante transiciones epsilon desde el estado inicial
+        estadosActuales.addAll(obtenerClausuraEpsilon(estadoInicial));
+    
+        for (char simbolo : cadena.toCharArray()) {
+            if (!esSimboloValido(simbolo)) {
+                return false;
+            }
+    
+            Set<Nodo> nuevosEstados = new HashSet<>();
+            for (Nodo estadoActual : estadosActuales) {
+                // Obtener los estados alcanzables desde el estado actual con el símbolo actual
+                Set<Nodo> destinos = transicionAFND(estadoActual, simbolo);
+                // Agregar los estados alcanzables mediante transiciones epsilon desde los nuevos estados
+                for (Nodo destino : destinos) {
+                    nuevosEstados.addAll(obtenerClausuraEpsilon(destino));
+                }
+            }
+            estadosActuales = nuevosEstados;
+    
+            if (estadosActuales.isEmpty()) {
+                return false;
+            }
+        }
+    
+        // Verificar si al menos uno de los estados finales es alcanzable
+        for (Nodo estado : estadosActuales) {
+            if (esEstadoAceptacion(estado)) {
+                return true;
+            }
+        }
+    
+        return false;
     }
     
 
@@ -111,6 +183,8 @@ public class Automata {
     
         return false;
     }
+
+    
     private boolean esSimboloValido(char simbolo) {
         for (char c : alfabeto) {
             if (c == simbolo) {

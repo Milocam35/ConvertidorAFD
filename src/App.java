@@ -144,9 +144,9 @@ public class App {
                 String[] estadosTemp;
                 boolean aceptaEstado;
                 System.out.println("Puede ingresar los estados separados por comas, ejemplo: (q0,q1)");
+                System.out.print(estados[i].getNombre() + " -> " + alfabeto[j] + ": ");
                 do {
                     aceptaEstado = false;
-                    System.out.print(estados[i].getNombre() + " -> " + alfabeto[j] + ": ");
                     String input = sc.nextLine();
                     estadosTemp = input.split(",");
     
@@ -165,18 +165,20 @@ public class App {
                             }
                         }
                     }
-    
+                    
                     if (aceptaEstado) {
                         automata.agregarTransicionAFND(estados[i], alfabeto[j], estadosDestino);
                         System.out.println("Transición agregada");
                     } else {
-                        System.out.println("Estados inválidos. Por favor, ingrese estados válidos separados por coma o 'null'."); 
+                        if (!estadosDestino.isEmpty()) {
+                            System.out.println("Estados inválidos. Por favor, ingrese estados válidos separados por coma o 'null'."); 
+                        }
                     }
-    
                 } while (!aceptaEstado);
             }
         }
     }
+    
     
 
     public static char[] ingresarAlfabeto(Scanner scanner) {
@@ -283,32 +285,37 @@ public class App {
     
     private static List<Nodo> generarEstadosAFD(Nodo[] estadosAFND, char[] alfabeto, String[][] matrizTransiciones) {
         List<Nodo> nuevosEstadosAFD = new ArrayList<>();
-        Set<String> nombresEstadosAFD = new HashSet<>();
     
-        // Agregar el estado inicial del AFND al conjunto de nuevos estados del AFD
-        nuevosEstadosAFD.add(estadosAFND[0]);
+        // Agregar todos los estados del AFND al conjunto de nuevos estados del AFD
+        for (Nodo estado : estadosAFND) {
+            nuevosEstadosAFD.add(estado);
+        }
     
         // Generar los nuevos estados del AFD a partir de la matriz de transiciones
         for (String[] fila : matrizTransiciones) {
             for (String transicion : fila) {
                 if (!transicion.equals("-") && !transicion.isEmpty()) { // Verificar si la cadena no está vacía
                     String[] nombresEstados = transicion.split(",");
-                    nombresEstadosAFD.add(String.join(",", nombresEstados)); // Agregar la combinación de estados al conjunto de nombres de estados del AFD
+                    // Verificar si ya existe un estado con estos nombres
+                    boolean encontrado = false;
+                    for (Nodo estado : nuevosEstadosAFD) {
+                        if (estado.getNombre().equals(String.join(",", nombresEstados))) {
+                            encontrado = true;
+                            break;
+                        }
+                    }
+                    // Si no se encuentra un estado con estos nombres, agregar uno nuevo
+                    if (!encontrado) {
+                        nuevosEstadosAFD.add(new Nodo(String.join(",", nombresEstados)));
+                    }
                 }
             }
         }
     
-        // Asegurarse de que los nombres de los estados estén ordenados alfabéticamente
-        List<String> sortedEstadoNames = new ArrayList<>(nombresEstadosAFD);
-        Collections.sort(sortedEstadoNames);
-    
-        // Crear los nuevos nodos para el AFD
-        for (String nombre : sortedEstadoNames) {
-            nuevosEstadosAFD.add(new Nodo(nombre));
-        }
-    
         return nuevosEstadosAFD;
     }
+    
+    
     
     
     
@@ -340,13 +347,15 @@ public class App {
                 matrizTransicionesAFD[i][j] = transicion;
             }
         }
+
+        String[][] nuevaMatrizTransiciones = crearNuevaMatrizTransiciones(nuevosEstadosAFD, alfabeto, matrizTransicionesAFD);
     
         // Generar transiciones válidas para cada estado del AFD
-        for (int i = 0; i < nuevosEstadosAFD.size(); i++) {
+        for (int i = 0; i < nuevaMatrizTransiciones.length; i++) {
             Nodo estadoOrigen = nuevosEstadosAFD.get(i);
             Map<Character, Nodo> transiciones = new HashMap<>();
             for (int j = 0; j < alfabeto.length; j++) {
-                String[] destinos = matrizTransicionesAFD[i][j].split(",");
+                String[] destinos = nuevaMatrizTransiciones[i][j].split(",");
                 StringBuilder estadoDestino = new StringBuilder();
                 for (String destino : destinos) {
                     Nodo estado = buscarEstadoPorNombre(nuevosEstadosAFD, destino);
@@ -399,7 +408,42 @@ public class App {
     }
     
     
+    private static String[][] crearNuevaMatrizTransiciones(List<Nodo> nuevosEstadosAFD, char[] alfabeto, String[][] matrizTransiciones) {
+        List<String> estadosUtilizados = new ArrayList<>();
+        estadosUtilizados.add(nuevosEstadosAFD.get(0).getNombre()); // Agregar el estado inicial
     
+        // Recorrer la matriz de transiciones y agregar los estados utilizados
+        for (String[] fila : matrizTransiciones) {
+            for (String transicion : fila) {
+                if (!transicion.equals("-") && !transicion.isEmpty()) {
+                    String[] destinos = transicion.split(",");
+                    for (String destino : destinos) {
+                        if (!estadosUtilizados.contains(destino)) {
+                            estadosUtilizados.add(destino);
+                        }
+                    }
+                }
+            }
+        }
+    
+        // Crear una nueva matriz de transiciones solo con los estados utilizados
+        String[][] nuevaMatrizTransiciones = new String[estadosUtilizados.size()][alfabeto.length];
+        for (int i = 0; i < estadosUtilizados.size(); i++) {
+            String estado = estadosUtilizados.get(i);
+            for (int j = 0; j < alfabeto.length; j++) {
+                for (int k = 0; k < nuevosEstadosAFD.size(); k++) {
+                    if (nuevosEstadosAFD.get(k).getNombre().equals(estado)) {
+                        nuevaMatrizTransiciones[i][j] = matrizTransiciones[k][j];
+                        break;
+                    }
+                }
+            }
+        }
+    
+        return nuevaMatrizTransiciones;
+    }
+    
+
     
 
     

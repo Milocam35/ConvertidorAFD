@@ -2,6 +2,10 @@
 Este proyecto implementa un autómata finito determinista (AFD) en Java, permitiendo al usuario definir el alfabeto, los estados del autómata, el estado inicial, los estados finales y la tabla de transiciones. Luego, el programa puede verificar si una cadena dada es aceptada por el autómata.
 
 ## Funcionalidades
+Permite al usuario definir el alfabeto, estados, estado inicial y estados finales del autómata.
+Verifica cadenas contra el autómata para determinar si se aceptan o rechazan.
+Convierte autómatas finitos no deterministas (NFA) en autómatas finitos deterministas (DFA).
+
 - Definir el alfabeto del autómata.
 - Ingresar los estados del autómata.
 - Establecer el estado inicial y los estados finales del autómata.
@@ -9,9 +13,12 @@ Este proyecto implementa un autómata finito determinista (AFD) en Java, permiti
 - Verificar si una cadena dada es aceptada por el autómata.
 - Si el automata es no determinista, lo transforma a determinista e imprime su tabla de transiciones
 
+- La clase App es la clase principal del programa. Proporciona una interfaz de usuario para crear e interactuar con autómatas finitos. La clase permite al usuario definir el alfabeto, los estados, el estado inicial y los estados finales del autómata. También proporciona métodos para verificar cadenas contra el autómata y convertir autómatas finitos no deterministas (NFA) en autómatas finitos deterministas (DFA).
+
 ## Avances
 - Definicion de transiciones nulas entre estados
 - Realizacion de un automata finito no determinista
-- Realizacion de automata finito no determinista (lambda) En progreso
+- Realizacion de automata finito no determinista con transiciones lambda
 - Conversion de AFD a AFND
+- Definir transiciones compuestas durante la transformacion de AFN a AFD (En progreso)
 

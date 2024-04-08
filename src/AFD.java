@@ -71,7 +71,7 @@ public class AFD extends Automata {
             System.out.print(estado.getNombre() + "\t|");
             for (char simbolo : super.getAlfabeto()) {
                 Nodo destino = transicionesEstado.get(simbolo);
-                System.out.print("\t" + (destino != null ? destino.getNombre() : "-") + "\t|");
+                System.out.print("\t" + (destino != null ? destino : "-") + "\t|");
             }
             System.out.println();
         }

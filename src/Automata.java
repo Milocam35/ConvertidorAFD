@@ -69,7 +69,7 @@ public class Automata {
         this.estadosFinales = estadosFinales;
     }
     
-    public boolean isVida() {
+    public boolean getVida() {
         return vida;
     }
 

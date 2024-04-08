@@ -11,6 +11,6 @@ public class Nodo {
 
     @Override
     public String toString() {
-        return nombre;
+        return "{" + nombre + "}";
     }
 }

@@ -97,6 +97,31 @@ public class AFN extends Automata {
         }
     }
 
+    public void mostrarMatrizTransicionesEpsilon() {
+        System.out.println("Matriz de Transiciones Épsilon:");
+    
+        // Imprimir encabezados de columna
+        System.out.print("Estado");
+        for (int i = 0; i < super.getEstados().length; i++) {
+            System.out.print("\tq" + i);
+        }
+        System.out.println();
+    
+        // Imprimir filas de la matriz de transiciones épsilon
+        for (int i = 0; i < super.getEstados().length; i++) {
+            System.out.print("q" + i);
+            for (int j = 0; j < super.getEstados().length; j++) {
+                Set<Nodo> clausuraEpsilon = obtenerClausuraEpsilon(super.getEstados()[i]);
+                System.out.print("\t" + (clausuraEpsilon.contains(super.getEstados()[j]) ? "ε" : "-"));
+            }
+            System.out.println();
+        }
+    }
+    
+    
+    
+    
+
     public boolean verificarCadenaAFNDLambda(String cadena) {
         Set<Nodo> estadosActuales = new HashSet<>();
         estadosActuales.add(super.getEstadoInicial());
@@ -135,7 +160,7 @@ public class AFN extends Automata {
         return false;
     }
 
-    private Set<Nodo> obtenerClausuraEpsilon(Nodo estado) {
+    public Set<Nodo> obtenerClausuraEpsilon(Nodo estado) {
         Set<Nodo> clausuraEpsilon = new HashSet<>();
         Queue<Nodo> cola = new LinkedList<>();
         cola.add(estado);
@@ -167,6 +192,16 @@ public class AFN extends Automata {
             transiciones.put('\0', destinos);
             transicionesAFND.put(origen, transiciones);
         }
+    }
+
+    // Método para obtener un estado por su nombre
+    public Nodo getEstadoPorNombre(String nombreEstado) {
+        for (Nodo estado : super.getEstados()) {
+            if (estado.getNombre().equals(nombreEstado)) {
+                return estado;
+            }
+        }
+        return null; // Retorna null si el estado no se encuentra
     }
 
     public Map<Nodo, Map<Character, Set<Nodo>>> getTransicionesAFND() {

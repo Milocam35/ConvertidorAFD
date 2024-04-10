@@ -12,13 +12,15 @@ Convierte autómatas finitos no deterministas (NFA) en autómatas finitos determ
 - Crear la tabla de transiciones del autómata.
 - Verificar si una cadena dada es aceptada por el autómata.
 - Si el automata es no determinista, lo transforma a determinista e imprime su tabla de transiciones
+- Si el automata es no determinista con lambda, lo transforma a no determinista, imprime su tabla de transiciones y luego transforma el nuevo AFN a un AFD comun e imprime su tabla de transiciones.
 
-- La clase App es la clase principal del programa. Proporciona una interfaz de usuario para crear e interactuar con autómatas finitos. La clase permite al usuario definir el alfabeto, los estados, el estado inicial y los estados finales del autómata. También proporciona métodos para verificar cadenas contra el autómata y convertir autómatas finitos no deterministas (NFA) en autómatas finitos deterministas (DFA).
+- La clase App es la clase principal del programa. Proporciona una interfaz de usuario para crear e interactuar con autómatas finitos. La clase permite al usuario definir el alfabeto, los estados, el estado inicial y los estados finales del autómata. También proporciona métodos para verificar cadenas contra el autómata, convertir autómatas finitos no deterministas (NFA) en autómatas finitos deterministas (DFA) y convertir automatas finitos no deterministas con transiciones lambda (NFA-Lambda) a un automata finito determinista (DFA).
 
 ## Avances
 - Definicion de transiciones nulas entre estados
 - Realizacion de un automata finito no determinista
 - Realizacion de automata finito no determinista con transiciones lambda
 - Conversion de AFD a AFND
-- Definir transiciones compuestas durante la transformacion de AFN a AFD (En progreso)
+- Definir transiciones compuestas durante la transformacion de AFN a AFD
+- Conversion de AFN con lambda a AFN
 

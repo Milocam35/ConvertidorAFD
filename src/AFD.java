@@ -59,7 +59,7 @@ public class AFD extends Automata {
         System.out.println();
     
         // Imprimir separador
-        int separadorLength = 8 + (super.getAlfabeto().length * 6); // Longitud de separador = longitud del estado + longitud de cada símbolo de alfabeto + separadores
+        int separadorLength = 29 + (super.getAlfabeto().length * 6); // Longitud de separador = longitud del estado + longitud de cada símbolo de alfabeto + separadores
         for (int i = 0; i < separadorLength; i++) {
             System.out.print("-");
         }

@@ -6,7 +6,7 @@ public class App {
 
     public static void main(String[] args) {
         /*
-        char[] alfabeto = {'0','1'};
+        char[] alfabeto = {'a','b','c'};
         Nodo[] estados = new Nodo[3];
         for (int i = 0; i < 3; i++) {
             estados[i] = new Nodo("q" + i);
@@ -15,6 +15,8 @@ public class App {
         Nodo estadoInicial = estados[0];
         List<Nodo> estadosFinales = new ArrayList<>(); 
         estadosFinales.add(estados[2]);
+        estadosFinales.add(estados[0]);
+        estadosFinales.add(estados[1]);
 
         AFN automata = new AFN(alfabeto, estados, estadoInicial, estadosFinales);
         Set<Nodo> estadosDestino = new HashSet<>();
@@ -23,22 +25,45 @@ public class App {
         estadosDestino = new HashSet<>();
         estadosDestino.add(null);
         automata.agregarTransicionAFND(estados[0], alfabeto[1], estadosDestino);
+        automata.agregarTransicionAFND(estados[0], alfabeto[2], estadosDestino);
         automata.agregarTransicionAFND(estados[1], alfabeto[0], estadosDestino);
+        automata.agregarTransicionAFND(estados[1], alfabeto[2], estadosDestino);
+        automata.agregarTransicionAFND(estados[2], alfabeto[0], estadosDestino);
+        automata.agregarTransicionAFND(estados[2], alfabeto[1], estadosDestino);
         estadosDestino = new HashSet<>();
         estadosDestino.add(estados[1]);
         automata.agregarTransicionAFND(estados[1], alfabeto[1], estadosDestino);
         estadosDestino = new HashSet<>();
         estadosDestino.add(estados[2]);
-        automata.agregarTransicionAFND(estados[2], alfabeto[0], estadosDestino);
-        automata.agregarTransicionAFND(estados[2], alfabeto[1], estadosDestino);
+        automata.agregarTransicionAFND(estados[2], alfabeto[2], estadosDestino);
+        
         automata.agregarTransicionEpsilon(estados[0], estados[1]);
         automata.agregarTransicionEpsilon(estados[1], estados[2]);
+        automata.mostrarTablaTransicionesAFND();
+        automata.mostrarMatrizTransicionesEpsilon();
 
-        System.out.println(automata.verificarCadenaAFNDLambda("000001"));
+        System.out.println(automata.verificarCadenaAFNDLambda("abcb"));
 
         AFN nuevoAfn = convertirAFNLaAFN(automata);
+        System.out.println(nuevoAfn.getTransicionesAFND());
+        System.out.println(nuevoAfn.getEstadosFinales());
         nuevoAfn.mostrarTablaTransicionesAFND();
-        System.out.println(nuevoAfn.verificarCadenaAFND("000001"));
+        System.out.println(nuevoAfn.verificarCadenaAFND("abcb"));
+        // Reemplazar transiciones vacías por un conjunto con un solo nodo con valor null
+        for (Nodo estado : nuevoAfn.getTransicionesAFND().keySet()) {
+            Map<Character, Set<Nodo>> transicionesEstado = nuevoAfn.getTransicionesAFND().get(estado);
+            for (char simbolo : transicionesEstado.keySet()) {
+                Set<Nodo> destinos = transicionesEstado.get(simbolo);
+                if (destinos != null && destinos.isEmpty()) {
+                    destinos = new HashSet<>();
+                    destinos.add(null);
+                    transicionesEstado.put(simbolo, destinos);
+                }
+            }
+        }
+        AFD afd = convertirAFNDaAFD(nuevoAfn);
+        afd.mostrarTablaTransicionesAFD();
+        System.out.println(afd.verificarCadenaAFD("abc"));
         */
         // Ingresar número de estados
         int nEstados;
@@ -74,7 +99,9 @@ public class App {
                 AFD afd = new AFD(alfabeto, estados, estadoInicial, estadosFinales);
                 definirTablaTransiciones(afd, scanner);
                 verificarCadena(afd, repetirCadena);
+                System.out.println();
                 afd.mostrarTablaTransicionesAFD();
+                System.out.println();
                 repetirEleccion = false;
                 mostrarGameOver(afd);
             } else if (clasificacionAutomata.equals("AFND")) {
@@ -82,26 +109,50 @@ public class App {
                 AFN afn = new AFN(alfabeto, estados, estadoInicial, estadosFinales);
                 definirTablaDeTrancisionesAFND(afn, scanner);
                 verificarCadena(afn, repetirCadena);
+                System.out.println();
                 afn.mostrarTablaTransicionesAFND();
+                System.out.println();
                 AFD afd = convertirAFNDaAFD(afn);
                 System.out.println("Nuevos estados finales: " + afd.getEstadosFinales());
+                System.out.println();
                 afd.mostrarTablaTransicionesAFD();
+                System.out.println();
                 verificarCadena(afd, repetirCadena);
                 repetirEleccion = false;
                 mostrarGameOver(afd);
             } else if (clasificacionAutomata.equals("AFNDL")) {
                 System.out.println("AUTOMATA FINITO NO DETERMINISTA LAMBDA:");
                 AFN afn = new AFN(alfabeto, estados, estadoInicial, estadosFinales);
+                System.out.println();
                 definirTablaDeTrancisionesLambda(afn, scanner);
+                System.out.println();
                 afn.mostrarTablaTransicionesAFND();
+                System.out.println();
                 afn.mostrarMatrizTransicionesEpsilon();
+                System.out.println();
                 verificarCadenaLambda(afn, repetirCadena);
                 AFN afnComun = convertirAFNLaAFN(afn);
+                System.out.println();
                 afnComun.mostrarTablaTransicionesAFND();
+                System.out.println();
                 verificarCadena(afnComun, repetirCadena);
+                // Reemplazar transiciones vacías por un conjunto con un solo nodo con valor null
+                for (Nodo estado : afnComun.getTransicionesAFND().keySet()) {
+                    Map<Character, Set<Nodo>> transicionesEstado = afnComun.getTransicionesAFND().get(estado);
+                    for (char simbolo : transicionesEstado.keySet()) {
+                        Set<Nodo> destinos = transicionesEstado.get(simbolo);
+                        if (destinos != null && destinos.isEmpty()) {
+                            destinos = new HashSet<>();
+                            destinos.add(null);
+                            transicionesEstado.put(simbolo, destinos);
+                        }
+                    }
+                }
                 AFD afd = convertirAFNDaAFD(afnComun);
                 System.out.println("Nuevos estados finales: " + afd.getEstadosFinales());
+                System.out.println();
                 afd.mostrarTablaTransicionesAFD();
+                System.out.println();
                 verificarCadena(afd, repetirCadena);
                 repetirEleccion = false;
                 mostrarGameOver(afn);
@@ -114,11 +165,13 @@ public class App {
     }
 
     public static void mostrarGameOver(Automata automata){
+        System.out.println();
         if (automata.getVida()) {
             System.out.println("¡Felicidades! Ha completado todas las cadenas correctamente. WIN!");
         } else {
             System.out.println("GAME OVER. Ha perdido una vida.");
         }
+        System.out.println();
     }
 
     public static void verificarCadena(AFN automata, boolean repetirCadena){
@@ -126,7 +179,6 @@ public class App {
             // Verificar cadenas
             System.out.println("Ingrese la cadena a verificar:");
             String cadena = scanner.next();
-            System.out.println(cadena);
             if(cadena==null){
                 cadena="";
             }
@@ -135,9 +187,12 @@ public class App {
             if (!cadenaValida) {
                 if(automata.getVida() == true){
                     automata.setVida(false);
+                    System.out.println();
                     System.out.println("El automata perdio su vida!!");
+                    System.out.println();
                 }
             }
+            System.out.println();
             System.out.println("Desea ingresar otra cadena? s/n");
             String repetir = scanner.next();
 
@@ -159,9 +214,12 @@ public class App {
             if (!cadenaValida) {
                 if(automata.getVida() == true){
                     automata.setVida(false);
+                    System.out.println();
                     System.out.println("El automata perdio su vida!!");
+                    System.out.println();
                 }
             }
+            System.out.println();
             System.out.println("Desea ingresar otra cadena? s/n");
             String repetir = scanner.next();
             if (repetir.equals("s")) {
@@ -184,9 +242,12 @@ public class App {
             if (!cadenaValida) {
                 if(automata.getVida() == true){
                     automata.setVida(false);
+                    System.out.println();
                     System.out.println("El automata perdio su vida!!");
+                    System.out.println();
                 }
             }
+            System.out.println();
             System.out.println("Desea ingresar otra cadena? s/n");
             String repetir = scanner.next();
 
@@ -701,35 +762,44 @@ public class App {
         // Obtener matrices de transiciones comunes y epsilon
         String[][] matrizTransicionesComunes = crearMatrizComun(afn);
         String[][] matrizTransicionesEpsilon = crearMatrizEpsilon(afn);
-
+    
         AFN nuevoAfn = new AFN(afn.getAlfabeto(), afn.getEstados(), afn.getEstadoInicial(), afn.getEstadosFinales());
-
+    
         // Iterar sobre todos los estados del AFN
-    for (Nodo estado : afn.getEstados()) {
-        // Iterar sobre todos los símbolos del alfabeto
-        for (char simbolo : afn.getAlfabeto()) {
-            Nodo nuevoNodo = crearEstadosAFNComun(afn, matrizTransicionesComunes, matrizTransicionesEpsilon, estado, simbolo);
-            
-            Set<Nodo> destinos = new HashSet<>();
-
-            // Si el nuevo estado contiene más de un estado, agregar cada estado individualmente al conjunto
-            if (nuevoNodo.getNombre().contains(",")) {
-                String[] estados = nuevoNodo.getNombre().split(",");
-                for (String nombreEstado : estados) {
-                    Nodo nodoExistente = nuevoAfn.getEstadoPorNombre(nombreEstado);
-                    destinos.add(nodoExistente);
+        for (Nodo estado : afn.getEstados()) {
+            // Iterar sobre todos los símbolos del alfabeto
+            for (char simbolo : afn.getAlfabeto()) {
+                Nodo nuevoNodo = crearEstadosAFNComun(afn, matrizTransicionesComunes, matrizTransicionesEpsilon, estado, simbolo);
+    
+                Set<Nodo> destinos = new HashSet<>();
+    
+                // Si el nuevo estado no es nulo
+                if (nuevoNodo != null) {
+                    // Si el nuevo estado contiene más de un estado, agregar cada estado individualmente al conjunto
+                    if (nuevoNodo.getNombre().contains(",")) {
+                        String[] estados = nuevoNodo.getNombre().split(",");
+                        for (String nombreEstado : estados) {
+                            Nodo nodoExistente = nuevoAfn.getEstadoPorNombre(nombreEstado);
+                            if (nodoExistente != null) {
+                                destinos.add(nodoExistente);
+                            }
+                        }
+                    } else {
+                        // Si el nuevo estado no existe en el AFN resultante, no se agrega
+                        Nodo nodoExistente = nuevoAfn.getEstadoPorNombre(nuevoNodo.getNombre());
+                        if (nodoExistente != null) {
+                            destinos.add(nodoExistente);
+                        }
+                    }
                 }
-            } else {
-                destinos.add(nuevoNodo);
+    
+                nuevoAfn.agregarTransicionAFND(estado, simbolo, destinos);
             }
-            
-            nuevoAfn.agregarTransicionAFND(estado, simbolo, destinos);
         }
-}
-
-
+    
         return nuevoAfn;
     }
+    
 
     public static Nodo crearEstadosAFNComun(AFN afn, String[][] matrizTransicionesComunes, String[][] matrizTransicionesEpsilon, Nodo estado, char simbolo) {
         // Obtener la clausura épsilon del estado actual
@@ -749,7 +819,6 @@ public class App {
                 String destinos = matrizTransicionesComunes[indiceEstado][obtenerIndiceSimbolo(afn.getAlfabeto(), simbolo)];
                 if (!destinos.equals("")) {
                     matrizEstadoSimbolo[fila][1] = destinos;
-    
                     // Verificar si los destinos están en el arreglo de estados
                     String[] destinosArray = destinos.split(",");
                     Set<String> clausuraEpsilonConcatenada = new HashSet<>();
@@ -778,22 +847,19 @@ public class App {
         }
 
         // Imprimir la matriz
-        /*System.out.println("Matriz para el estado " + estado.getNombre() + " y el símbolo '" + simbolo + "':");
+        System.out.println("Matriz para el estado " + estado.getNombre() + " y el símbolo '" + simbolo + "':");
         for (int i = 0; i < matrizEstadoSimbolo.length; i++) {
             for (int j = 0; j < matrizEstadoSimbolo[i].length; j++) {
                 System.out.print(matrizEstadoSimbolo[i][j] + "\t");
             }
             System.out.println();
-        }*/
+        }
     
         // Crear el estado combinado
         Nodo estadoCombinado = crearEstadoCombinado(matrizEstadoSimbolo);
     
         return estadoCombinado;
     }
-    
-    
-    
 
     public static Nodo crearEstadoCombinado(String[][] matrizEstadoSimbolo) {
         Set<String> estadosCombinados = new TreeSet<>(); // Usar TreeSet para mantener el orden
@@ -806,6 +872,10 @@ public class App {
                     estadosCombinados.add(estado); // Asegurarse de no agregar estados duplicados
                 }
             }
+        }
+
+        if(estadosCombinados.isEmpty()){
+            return null;
         }
     
         // Crear un nuevo nodo con el nombre formado por la concatenación de los estados en orden
